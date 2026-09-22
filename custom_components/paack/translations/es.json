@@ -1,0 +1,160 @@
+{
+  "title": "Paack",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurar Paack",
+        "description": "El seguimiento de Paack no requiere cuenta. Elige el país y el código postal de entrega; añade paquetes después en las opciones.",
+        "data": {
+          "country": "País",
+          "postal_code": "Código postal"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Paack ya está configurado."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opciones de Paack",
+        "menu_options": {
+          "parcels": "Paquetes",
+          "settings": "Ajustes"
+        },
+        "sections": {
+          "parcels": {
+            "name": "Paquetes",
+            "data": {
+              "add": "Añadir un paquete",
+              "remove": "Eliminar paquetes"
+            },
+            "data_description": {
+              "add": "Introduce un código de seguimiento de Paack para empezar a seguirlo."
+            }
+          },
+          "delivered": {
+            "name": "Paquetes entregados",
+            "data": {
+              "delivered_filter_type": "Filtrar por",
+              "delivered_filter_amount": "Cantidad"
+            },
+            "data_description": {
+              "delivered_filter_type": "Muestra los paquetes entregados de los últimos X días o limita a los X más recientes.",
+              "delivered_filter_amount": "Número de días o paquetes que se mostrarán."
+            }
+          },
+          "history": {
+            "name": "Historial del paquete",
+            "data": {
+              "include_history": "Incluir historial de estado"
+            },
+            "data_description": {
+              "include_history": "Añade un atributo de historial por paquete con cada actualización de estado. Desactivado de forma predeterminada."
+            }
+          }
+        }
+      },
+      "parcels": {
+        "title": "Gestionar paquetes",
+        "data": {
+          "tracking_codes": "Códigos de seguimiento"
+        }
+      },
+      "settings": {
+        "title": "Ajustes",
+        "data": {
+          "delivered_filter_type": "Paquetes entregados: filtrar por",
+          "delivered_filter_amount": "Paquetes entregados: cantidad",
+          "include_history": "Incluir historial de estado"
+        }
+      }
+    },
+    "error": {
+      "invalid_tracking_code": "No parece un código de seguimiento de Paack.",
+      "already_tracked": "Ese paquete ya se está siguiendo."
+    }
+  },
+  "selector": {
+    "delivered_filter_type": {
+      "options": {
+        "days": "Días",
+        "parcels": "Número de paquetes"
+      }
+    },
+    "country": {
+      "options": {
+        "es": "España",
+        "fr": "Francia",
+        "it": "Italia",
+        "pt": "Portugal"
+      }
+    }
+  },
+  "services": {
+    "track_parcel": {
+      "name": "Seguir paquete",
+      "description": "Empieza a seguir un paquete mediante su código de Paack.",
+      "fields": {
+        "tracking_code": {
+          "name": "Código de seguimiento",
+          "description": "El código de seguimiento de Paack."
+        }
+      }
+    },
+    "untrack_parcel": {
+      "name": "Dejar de seguir paquete",
+      "description": "Deja de seguir un paquete mediante su código de Paack.",
+      "fields": {
+        "tracking_code": {
+          "name": "Código de seguimiento",
+          "description": "El código de Paack que se dejará de seguir."
+        }
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "parcel_registered": "Se registró un paquete",
+      "parcel_status_changed": "Cambió el estado de un paquete",
+      "parcel_delivered": "Se entregó un paquete",
+      "parcel_delivery_time_changed": "Cambió la hora de entrega prevista"
+    }
+  },
+  "entity": {
+    "button": {
+      "refresh": {
+        "name": "Actualizar"
+      }
+    },
+    "calendar": {
+      "deliveries": {
+        "name": "Entregas"
+      }
+    },
+    "sensor": {
+      "incoming_parcels": {
+        "name": "Paquetes entrantes",
+        "unit_of_measurement": "paquetes"
+      },
+      "next_delivery": {
+        "name": "Próxima entrega"
+      },
+      "delivered_parcels": {
+        "name": "Paquetes entregados",
+        "unit_of_measurement": "paquetes"
+      },
+      "awaiting_pickup": {
+        "name": "Listo para recoger",
+        "unit_of_measurement": "paquetes"
+      },
+      "last_update": {
+        "name": "Última actualización correcta"
+      },
+      "parcel": {
+        "name": "Paquete {barcode}"
+      }
+    }
+  }
+}
