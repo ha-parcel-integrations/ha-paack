@@ -112,3 +112,10 @@ def test_awaiting_pickup_counts_only_parcels_at_a_pickup_point():
     sensor = PaackAwaitingPickupSensor(coordinator, _entry())
     assert sensor.native_value == 1
     assert sensor.extra_state_attributes["parcels"][0]["barcode"] == "A"
+
+
+def test_awaiting_pickup_counts_rerouted_parcel_without_pickup_flag():
+    rerouted = _parcel("REROUTED", status=ParcelStatus.AT_PICKUP_POINT)
+    sensor = PaackAwaitingPickupSensor(_coordinator([rerouted, _parcel("HOME")]), _entry())
+    assert sensor.native_value == 1
+    assert sensor.extra_state_attributes["parcels"] == [rerouted]

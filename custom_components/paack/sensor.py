@@ -294,7 +294,7 @@ class PaackAwaitingPickupSensor(
     def _parcels(self) -> list[dict]:
         return [
             p for p in (self.coordinator.data or [])
-            if p.get("pickup") and p.get("status") == ParcelStatus.AT_PICKUP_POINT
+            if p.get("status") == ParcelStatus.AT_PICKUP_POINT
         ]
 
     @property
