@@ -4,12 +4,13 @@
 tracked parcel without opening the integration options — so a Lovelace button
 can start tracking a parcel straight from a dashboard.
 """
+
 from __future__ import annotations
 
-import voluptuous as vol
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
+import voluptuous as vol
 
 from .config_flow import (
     normalize_postcode,
@@ -22,7 +23,12 @@ from .const import CONF_PARCELS, CONF_POSTAL_CODE, CONF_TRACKING_CODE, DOMAIN
 SERVICE_TRACK_PARCEL = "track_parcel"
 SERVICE_UNTRACK_PARCEL = "untrack_parcel"
 
-_TRACK_SCHEMA = vol.Schema({vol.Required(CONF_TRACKING_CODE): cv.string, vol.Optional(CONF_POSTAL_CODE): cv.string})
+_TRACK_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_TRACKING_CODE): cv.string,
+        vol.Optional(CONF_POSTAL_CODE): cv.string,
+    }
+)
 _UNTRACK_SCHEMA = vol.Schema({vol.Required(CONF_TRACKING_CODE): cv.string})
 
 
@@ -71,7 +77,9 @@ def async_setup_services(hass: HomeAssistant) -> None:
             current = entry.options.get(CONF_PARCELS, [])
             kept = [p for p in current if p[CONF_TRACKING_CODE] != tracking_code]
             if len(kept) != len(current):
-                hass.config_entries.async_update_entry(entry, options={**entry.options, CONF_PARCELS: kept})
+                hass.config_entries.async_update_entry(
+                    entry, options={**entry.options, CONF_PARCELS: kept}
+                )
 
     hass.services.async_register(
         DOMAIN, SERVICE_TRACK_PARCEL, _track, schema=_TRACK_SCHEMA

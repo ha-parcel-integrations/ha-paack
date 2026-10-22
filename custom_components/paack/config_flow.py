@@ -6,7 +6,6 @@ import logging
 import re
 from typing import Any
 
-import voluptuous as vol
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -15,6 +14,7 @@ from homeassistant.config_entries import (
 )
 from homeassistant.core import callback
 from homeassistant.helpers import selector
+import voluptuous as vol
 
 from .const import (
     CONF_COUNTRY,
@@ -52,6 +52,7 @@ def _hub_schema(country: str) -> vol.Schema:
         }
     )
 
+
 def normalize_tracking_code(value: str) -> str:
     """Return the tracking code upper-cased with separators stripped.
 
@@ -80,7 +81,7 @@ def normalize_postcode(value: str) -> str:
 
 
 def valid_postcode(value: str) -> bool:
-    """Accept Paack's documented 3–10 alphanumeric postcode boundary."""
+    """Accept Paack's documented 3-10 alphanumeric postcode boundary."""
     return bool(re.fullmatch(r"[A-Z0-9-]{3,10}", value))
 
 

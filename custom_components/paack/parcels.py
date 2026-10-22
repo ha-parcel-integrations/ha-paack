@@ -12,10 +12,11 @@ timestamp parsing, the history builder, the sort contract, the delivered
 filter, the one-shot warning for unmapped statuses — is suite-wide machinery
 and should be left alone.
 """
+
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 import logging
-from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -131,11 +132,11 @@ def parse_iso(value: str | None) -> datetime | None:
     if not value:
         return None
     try:
-        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(str(value))
     except ValueError:
         return None
     if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
+        parsed = parsed.replace(tzinfo=UTC)
     return parsed
 
 
@@ -151,7 +152,7 @@ def to_iso_timestamp(value: Any) -> str | None:
         return None
     if isinstance(value, (int, float)):
         try:
-            return datetime.fromtimestamp(value / 1000, tz=timezone.utc).isoformat()
+            return datetime.fromtimestamp(value / 1000, tz=UTC).isoformat()
         except (OverflowError, OSError, ValueError):
             return None
     return str(value)
@@ -201,7 +202,9 @@ def build_history(
         entry = {
             "timestamp": timestamp,
             "status": map_event_status(event.get("label") or event.get("statusCode")),
-            "raw_status": event.get("label") or event.get("description") or event.get("statusCode"),
+            "raw_status": event.get("label")
+            or event.get("description")
+            or event.get("statusCode"),
         }
         parsed = parse_iso(timestamp)
         if parsed is None:
@@ -213,7 +216,9 @@ def build_history(
     return ordered[-max_events:]
 
 
-def tracking_url(tracking_code: str | None, postal_code: str | None = None) -> str | None:
+def tracking_url(
+    tracking_code: str | None, postal_code: str | None = None
+) -> str | None:
     """Construct the consumer tracking deep-link for a parcel."""
     if not tracking_code:
         return None
@@ -270,7 +275,11 @@ def normalize_parcel(
         "status": status,
         "raw_status": active_event.get("label") or raw.get("statusText") or status_code,
         "delivered": delivered,
-        "delivered_at": to_iso_timestamp(active_event.get("timestamp") or raw.get("deliveredAt")) if delivered else None,
+        "delivered_at": to_iso_timestamp(
+            active_event.get("timestamp") or raw.get("deliveredAt")
+        )
+        if delivered
+        else None,
         "planned_from": None if delivered else planned_from,
         "planned_to": None if delivered else planned_to,
         "pickup": status is ParcelStatus.AT_PICKUP_POINT,
@@ -278,7 +287,9 @@ def normalize_parcel(
         "url": tracking_url(tracking_code, postal_code),
         "weight": None,
         "dimensions": None,
-        "history": build_history(raw.get("eventList") or raw.get("events")) if include_history else None,
+        "history": build_history(raw.get("eventList") or raw.get("events"))
+        if include_history
+        else None,
         "raw": raw,
     }
 
@@ -314,14 +325,12 @@ def apply_delivered_filter(parcels: list[dict], entry: ConfigEntry) -> list[dict
     shows.
     """
     options = entry.options
-    filter_type = options.get(
-        CONF_DELIVERED_FILTER_TYPE, DEFAULT_DELIVERED_FILTER_TYPE
-    )
+    filter_type = options.get(CONF_DELIVERED_FILTER_TYPE, DEFAULT_DELIVERED_FILTER_TYPE)
     amount = int(
         options.get(CONF_DELIVERED_FILTER_AMOUNT, DEFAULT_DELIVERED_FILTER_AMOUNT)
     )
     if filter_type == "days":
-        cutoff = datetime.now(timezone.utc) - timedelta(days=amount)
+        cutoff = datetime.now(UTC) - timedelta(days=amount)
         return [
             parcel
             for parcel in parcels

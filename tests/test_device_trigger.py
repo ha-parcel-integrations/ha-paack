@@ -1,4 +1,5 @@
 """Tests for Paack device triggers."""
+
 from unittest.mock import AsyncMock, patch
 
 from homeassistant.const import CONF_DEVICE_ID, CONF_TYPE
@@ -32,6 +33,7 @@ def test_trigger_events_map_to_domain_prefix():
 async def test_attach_trigger_delegates_to_event_trigger(hass):
     def callback():
         return None
+
     with patch(
         "custom_components.paack.device_trigger.event_trigger.async_attach_trigger",
         new=AsyncMock(return_value=callback),

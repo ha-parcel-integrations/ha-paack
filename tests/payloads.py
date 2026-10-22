@@ -1,4 +1,5 @@
 """Wholly synthetic, PII-free Paack loader-data samples shared by tests."""
+
 from __future__ import annotations
 
 ACTIVE_CODE = "EXAMPLE999999"
