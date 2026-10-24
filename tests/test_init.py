@@ -43,8 +43,42 @@ async def test_setup_and_unload(hass):
     await hass.async_block_till_done()
     assert entry.state is ConfigEntryState.NOT_LOADED
 
-    # ...and removed on unload (single-instance integration).
+    # ...and removed once the last hub unloads.
     assert not hass.services.has_service(DOMAIN, "track_parcel")
+
+
+async def test_services_survive_unloading_one_of_two_hubs(hass):
+    first = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="ES:28001",
+        options={CONF_PARCELS: [{CONF_TRACKING_CODE: ACTIVE_CODE}]},
+    )
+    second = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="ES:08001",
+        options={CONF_PARCELS: [{CONF_TRACKING_CODE: OTHER_CODE}]},
+    )
+    first.add_to_hass(hass)
+    second.add_to_hass(hass)
+
+    with patch(
+        "custom_components.paack.api.PaackApiClient.async_get_parcel",
+        new=AsyncMock(return_value=_sample()),
+    ):
+        assert await hass.config_entries.async_setup(first.entry_id)
+        await hass.async_block_till_done()
+    assert second.state is ConfigEntryState.LOADED
+
+    assert await hass.config_entries.async_unload(first.entry_id)
+    await hass.async_block_till_done()
+    assert second.state is ConfigEntryState.LOADED
+    assert hass.services.has_service(DOMAIN, "track_parcel")
+    assert hass.services.has_service(DOMAIN, "untrack_parcel")
+
+    assert await hass.config_entries.async_unload(second.entry_id)
+    await hass.async_block_till_done()
+    assert not hass.services.has_service(DOMAIN, "track_parcel")
+    assert not hass.services.has_service(DOMAIN, "untrack_parcel")
 
 
 async def test_setup_retries_when_first_refresh_fails(hass):

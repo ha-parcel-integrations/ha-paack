@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import logging
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -67,7 +67,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: PaackConfigEntry) -> bo
     """Unload the Paack config entry."""
     if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         return False
-    # Single-instance integration (single_config_entry), so the services can
-    # always go when the entry unloads.
-    async_unload_services(hass)
+    # Services are shared by every postcode hub. Keep them while another hub is
+    # loaded, so unloading one hub does not break the services for the others.
+    if not any(
+        other.entry_id != entry.entry_id and other.state is ConfigEntryState.LOADED
+        for other in hass.config_entries.async_entries(entry.domain)
+    ):
+        async_unload_services(hass)
     return True
