@@ -100,6 +100,10 @@
         "tracking_code": {
           "name": "Numéro de suivi",
           "description": "Le numéro de suivi Paack."
+        },
+        "postal_code": {
+          "name": "Code postal",
+          "description": "Le code postal du hub qui doit suivre le colis. Nécessaire uniquement si plusieurs hubs Paack sont configurés."
         }
       }
     },

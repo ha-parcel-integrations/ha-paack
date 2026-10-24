@@ -100,6 +100,10 @@
         "tracking_code": {
           "name": "Trackingcode",
           "description": "De Paack-trackingcode."
+        },
+        "postal_code": {
+          "name": "Postcode",
+          "description": "De postcode van de hub die het pakket moet volgen. Alleen nodig als er meerdere Paack-hubs zijn ingesteld."
         }
       }
     },
