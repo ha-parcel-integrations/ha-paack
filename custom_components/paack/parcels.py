@@ -18,6 +18,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 import logging
 from typing import Any
+from urllib.parse import quote
 
 from homeassistant.config_entries import ConfigEntry
 
@@ -222,8 +223,10 @@ def tracking_url(
     """Construct the consumer tracking deep-link for a parcel."""
     if not tracking_code:
         return None
-    url = TRACKING_URL.format(tracking_code=tracking_code)
-    return f"{url}&postal_code={postal_code}" if postal_code else url
+    url = TRACKING_URL.format(tracking_code=quote(str(tracking_code), safe=""))
+    if not postal_code:
+        return url
+    return f"{url}&postal_code={quote(str(postal_code), safe='')}"
 
 
 def normalize_parcel(

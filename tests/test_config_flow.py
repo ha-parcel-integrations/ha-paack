@@ -18,8 +18,9 @@ from custom_components.paack.const import (
 )
 
 
-def test_normalize_tracking_code_strips_and_uppercases():
-    assert normalize_tracking_code("example 123-456") == "EXAMPLE123456"
+def test_normalize_tracking_code_only_removes_whitespace():
+    assert normalize_tracking_code("  example 123-456 ") == "example123-456"
+    assert normalize_tracking_code("ABcDefghi_1") == "ABcDefghi_1"
     assert normalize_tracking_code("") == ""
     assert normalize_tracking_code(None) == ""
 
@@ -93,7 +94,7 @@ async def test_options_add_parcel(hass):
 
     result = await _open_options_step(hass, entry, "parcels")
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {"tracking_codes": ["example123456"]}
+        result["flow_id"], {"tracking_codes": ["EXAMPLE123456"]}
     )
     assert result["type"] == "create_entry"
     assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "EXAMPLE123456"}]
@@ -101,16 +102,16 @@ async def test_options_add_parcel(hass):
     assert result["data"][CONF_POSTAL_CODE] == "28012"
 
 
-async def test_options_add_code_with_separators(hass):
-    """Pasted codes with spaces/dashes are sanitised like the consumer site."""
+async def test_options_keep_case_and_separators(hass):
+    """A mixed-case code with an underscore reaches the carrier unchanged."""
     entry = _hub([])
     entry.add_to_hass(hass)
     result = await _open_options_step(hass, entry, "parcels")
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {"tracking_codes": ["example-123 456"]}
+        result["flow_id"], {"tracking_codes": [" ABcDefghi_1 "]}
     )
     assert result["type"] == "create_entry"
-    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "EXAMPLE123456"}]
+    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "ABcDefghi_1"}]
 
 
 async def test_options_accepts_any_non_empty_code(hass):
@@ -122,7 +123,7 @@ async def test_options_accepts_any_non_empty_code(hass):
         result["flow_id"], {"tracking_codes": ["abc"]}
     )
     assert result["type"] == "create_entry"
-    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "ABC"}]
+    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "abc"}]
 
 
 async def test_options_de_duplicates_tracking_codes(hass):
@@ -130,7 +131,7 @@ async def test_options_de_duplicates_tracking_codes(hass):
     entry.add_to_hass(hass)
     result = await _open_options_step(hass, entry, "parcels")
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {"tracking_codes": ["EXAMPLE111111", "example111111"]}
+        result["flow_id"], {"tracking_codes": ["EXAMPLE111111", "EXAMPLE 111111"]}
     )
     assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "EXAMPLE111111"}]
 

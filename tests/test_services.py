@@ -53,7 +53,7 @@ async def test_track_parcel_adds_to_options(hass):
     assert parcels == [{CONF_TRACKING_CODE: "EXAMPLE999999"}]
 
 
-async def test_track_parcel_normalizes_code(hass):
+async def test_track_parcel_keeps_case_and_separators(hass):
     entry = await _setup(hass)
     with patch(
         "custom_components.paack.api.PaackApiClient.async_get_parcel",
@@ -62,12 +62,12 @@ async def test_track_parcel_normalizes_code(hass):
         await hass.services.async_call(
             DOMAIN,
             "track_parcel",
-            {CONF_TRACKING_CODE: "example-999 999"},
+            {CONF_TRACKING_CODE: " ABcDefghi_1 "},
             blocking=True,
         )
         await hass.async_block_till_done()
 
-    assert entry.options[CONF_PARCELS] == [{CONF_TRACKING_CODE: "EXAMPLE999999"}]
+    assert entry.options[CONF_PARCELS] == [{CONF_TRACKING_CODE: "ABcDefghi_1"}]
 
 
 async def test_track_parcel_accepts_any_non_empty_code(hass):
@@ -82,7 +82,7 @@ async def test_track_parcel_accepts_any_non_empty_code(hass):
         )
         await hass.async_block_till_done()
 
-    assert entry.options[CONF_PARCELS] == [{CONF_TRACKING_CODE: "ABC"}]
+    assert entry.options[CONF_PARCELS] == [{CONF_TRACKING_CODE: "abc"}]
 
 
 async def test_track_parcel_rejects_empty_code(hass):

@@ -69,7 +69,7 @@ Copy `custom_components/paack` into your `config/custom_components/` folder and 
 
 Or set it up by hand: add the integration via **Settings → Devices & Services → Add Integration → Paack**. Choose the delivery country and postcode; setup makes no network request. Add tracking codes afterwards via **Configure** or the service.
 
-Then add parcels via the integration's **Configure** dialog, the [`paack.track_parcel`](#services) service, or a [dashboard button](examples/dashboards/add_parcel_card.yaml). The tracking code is on your shipping confirmation email or the missed-delivery card.
+Then add parcels via the integration's **Configure** dialog, the [`paack.track_parcel`](#services) service, or a [dashboard button](examples/dashboards/add_parcel_card.yaml). The tracking code is on your shipping confirmation email or the missed-delivery card. Enter it exactly as it was issued — Paack looks the code up as-is, so its upper/lower case and any underscore are part of it; only surrounding spaces are removed.
 
 ## Options
 

@@ -28,9 +28,21 @@ from custom_components.paack.parcels import (
     parse_iso,
     sort_parcels_by_ts,
     to_iso_timestamp,
+    tracking_url,
 )
 
 from .payloads import active_sample, delivered_sample, event, pickup_sample
+
+
+def test_tracking_url_keeps_the_code_as_issued_and_escapes_it():
+    assert (
+        tracking_url("ABcDefghi_1", "28012")
+        == "https://paack.co/shipments/tracking/order"
+        "?tracking_number=ABcDefghi_1&postal_code=28012"
+    )
+    assert "%2F" in tracking_url("a/b")
+    assert tracking_url(None) is None
+
 
 # ---------------------------------------------------------------------------
 # map_parcel_status / map_event_status

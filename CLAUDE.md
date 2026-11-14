@@ -146,6 +146,14 @@ regex risks rejecting a genuinely valid code; an actually-bad code just comes
 back "not found" on the next poll, which is a far cheaper failure mode. Do
 not add one back in, even once the format is confirmed.
 
+**Paack's `normalize_tracking_code` removes whitespace and nothing else** —
+not the template's upper-case-and-strip-separators default. A Paack code is a
+retailer order reference: it can be mixed-case and carry an underscore, and
+the route only matches it as issued, so re-casing it or dropping a separator
+left a live parcel stuck on `unknown` forever (issue #7). The deep link in
+`parcels.py` URL-escapes the code for the same reason. Do not restore the
+`[^A-Z0-9]+` sanitiser, however much the carrier's own input field does it.
+
 ## Dynamic polling
 
 There is no user-facing polling interval — this is a deliberate suite-wide

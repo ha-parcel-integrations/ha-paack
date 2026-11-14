@@ -54,13 +54,15 @@ def _hub_schema(country: str) -> vol.Schema:
 
 
 def normalize_tracking_code(value: str) -> str:
-    """Return the tracking code upper-cased with separators stripped.
+    """Return the tracking code as issued, with whitespace removed.
 
-    Mirrors what a consumer site's own sanitiser does (uppercase, drop
-    everything that is not ``A-Z0-9``), so codes pasted with spaces or dashes
-    still work.
+    Paack codes are retailer order references: they can be mixed-case and
+    carry characters such as an underscore, and the route only matches a code
+    exactly as the retailer issued it. Re-casing it or dropping a separator
+    turns a live parcel into a permanent "not found", so whitespace from a
+    paste is the only thing taken out.
     """
-    return re.sub(r"[^A-Z0-9]+", "", (value or "").upper())
+    return re.sub(r"\s+", "", value or "")
 
 
 def valid_tracking_code(value: str) -> bool:
