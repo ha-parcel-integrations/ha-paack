@@ -5,7 +5,7 @@ These need no Home Assistant instance — the whole point of keeping
 rewrite per carrier) can be tested as plain functions.
 """
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, time, timedelta
 
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -285,12 +285,12 @@ def test_normalize_loader_delivery_window():
     assert parcel["planned_to"] == "2026-04-17T20:00:00.000Z"
 
 
-def test_normalize_collapses_point_estimate_to_no_window_end():
+def test_normalize_stretches_point_estimate_to_the_end_of_the_day():
     raw = active_sample()
     raw["estimatedDelivery"]["to"] = raw["estimatedDelivery"]["from"]
     parcel = normalize_parcel(raw)
     assert parcel["planned_from"] == "2026-04-29T13:00:00Z"
-    assert parcel["planned_to"] is None
+    assert datetime.fromisoformat(parcel["planned_to"]).time() == time(23, 59, 59)
 
 
 def test_normalize_pickup_parcel():

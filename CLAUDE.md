@@ -35,12 +35,16 @@ you act in one of these areas:
   summary+diagnostic sensors. Add a new non-parcel sensor's unique_id to the set.
 - **Per-parcel sensors are removed by the summary sensor** via
   `entity_registry.async_remove` (self-removal races and leaves ghosts).
-- **If this carrier can reach `ParcelStatus.AT_PICKUP_POINT` from a real raw
-  status/code**, it needs an `awaiting_pickup` sensor — see *Parcel contract*
-  in `CONVENTIONS.md`. Say "pickup point", not "ServicePoint"/"parcel
-  shop"/"locker", for the generic concept. `ha-dhl-nl`, `ha-dpd`, `ha-gls`,
-  `ha-inpost` are reference implementations; Paack maps its documented PUDO
-  states and exposes the awaiting-pickup sensor.
+- **The pickup-point summaries are a pair.** A carrier that can deliver to a
+  pickup point or locker exposes both `en_route_to_pickup_point` and
+  `awaiting_pickup`, even before a real parcel has shown the status or flag
+  (they read 0 until then; record it in `PENDING_*`). A carrier without pickup
+  points exposes neither and keeps `pickup` constantly False.
+  See *Parcel contract* in `CONVENTIONS.md`. Say "pickup point", not
+  "ServicePoint"/"parcel shop"/"locker", for the generic concept; the
+  example carrier demonstrates both canonical sensors.
+  Paack maps its documented PUDO states and exposes the awaiting-pickup
+  sensor.
 
 ## Carrier-specific notes
 
@@ -52,6 +56,13 @@ in runtime `raw`, never page HTML. Delivery and pickup estimates are optional;
 weight and dimensions are intentionally `None`. Diagnostics redact every
 identifier, address, contact and PUDO field. API mechanics remain private in
 `carrier-research/paack/api/`.
+
+## Parcel contract notes
+
+- Paack delivers to pickup points (PUDO) in ES, PT, FR and IT, so it exposes both `awaiting_pickup` and `en_route_to_pickup_point`.
+- `pickup` is true when the payload names a pickup point (`pudo_name` / `pickupPoint.name`) or the parcel reached `at_pickup_point` in any returned event; it stays true after collection.
+- Awaiting evidence: no real parcel has yet confirmed that the pickup-point name is absent on a home delivery, nor the offset of the loader's timestamps. Until then a home delivery with a stray name would read as `pickup`.
+- Delivery windows use Home Assistant's time zone (the carrier spans several zones). A single moment ends at 23:59:59 that day; `delivered` is only `status is DELIVERED`, a returned parcel is never delivered.
 
 ## Options and reloads
 

@@ -35,7 +35,7 @@ A custom Home Assistant integration that tracks your [Paack](https://paack.co/) 
 
 - Track any number of Paack parcels by tracking code — no account needed
 - Per-parcel sensor with the canonical status (`registered` / `in_transit` / `out_for_delivery` / `delivered` / …), the carrier's own status text, the expected delivery window and a tracking deep-link
-- Summary sensors: incoming parcels, next delivery, parcels awaiting pickup, recently delivered parcels
+- Summary sensors: incoming parcels, next delivery, parcels on their way to a pickup point, parcels awaiting pickup, recently delivered parcels
 - Read-only **Deliveries** calendar with the expected delivery windows
 - `paack.track_parcel` / `paack.untrack_parcel` services, so a dashboard button can add a parcel
 - Events + device triggers for no-code automations (parcel registered, status changed, delivered, delivery time changed)
@@ -113,6 +113,7 @@ Standard HA removal applies: **Settings → Devices & Services → Paack → ⋮
 | `sensor.paack_incoming_parcels` | Number of active tracked parcels, full list under the `parcels` attribute |
 | `sensor.paack_parcel_<code>` | One per tracked parcel; state is the canonical status, attributes carry the full normalised parcel |
 | `sensor.paack_next_delivery` | Earliest expected delivery moment across all active parcels |
+| `sensor.paack_en_route_to_pickup_point` | Incoming parcels on their way to a pickup point that have not arrived yet |
 | `sensor.paack_awaiting_pickup` | Parcels dropped at a pickup point and ready to collect |
 | `sensor.paack_delivered_parcels` | Recently delivered parcels (see the retention option) |
 | `calendar.paack_deliveries` | Read-only calendar of expected deliveries, no extra API calls |
