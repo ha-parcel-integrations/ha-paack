@@ -38,6 +38,7 @@ A custom Home Assistant integration that tracks your [Paack](https://paack.co/) 
 - Summary sensors: incoming parcels, next delivery, parcels on their way to a pickup point, parcels awaiting pickup, recently delivered parcels
 - Read-only **Deliveries** calendar with the expected delivery windows
 - `paack.track_parcel` / `paack.untrack_parcel` services, so a dashboard button can add a parcel
+- A `contents` field on every parcel, set in your own words with the `paack.update_contents` service or the `contents` field of `paack.track_parcel`; it titles the calendar event and shows on the next-delivery sensor
 - Events + device triggers for no-code automations (parcel registered, status changed, delivered, delivery time changed)
 - Opt-in per-parcel status history
 - Manual refresh button and a diagnostic last-update sensor
@@ -155,8 +156,9 @@ Every payload is the full normalised parcel plus the hub's `device_id`. Events a
 
 | Service | Fields | Description |
 |---|---|---|
-| `paack.track_parcel` | `tracking_code`, optional `postal_code` | Start tracking a parcel; specify the postcode when several hubs exist |
+| `paack.track_parcel` | `tracking_code`, optional `postal_code`, optional `contents` | Start tracking a parcel, optionally noting what is in it; specify the postcode when several hubs exist |
 | `paack.untrack_parcel` | `tracking_code` | Stop tracking a parcel |
+| `paack.update_contents` | `tracking_code`, `contents` (optional), `config_entry_id` (optional) | Set what is in a parcel, tracked or not; an empty `contents` clears it. It titles the calendar event and shows on the next-delivery sensor. It goes to every hub that follows the code, or to the one named by `config_entry_id`; with several hubs set up, a code no hub follows is refused unless you name the hub |
 
 ## Examples
 

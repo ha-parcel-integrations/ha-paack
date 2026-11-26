@@ -20,6 +20,7 @@ TO_REDACT = {
     "barcode",
     "sender",
     "receiver",
+    "contents",
     "url",
     # carrier payload fields
     "external_id",

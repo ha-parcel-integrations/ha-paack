@@ -4,7 +4,11 @@
     "step": {
       "user": {
         "title": "Set up Paack",
-        "description": "Paack tracking needs no account or postal code — the hub is created right away. Add parcels afterwards via the integration options or the `paack.track_parcel` service."
+        "description": "Paack tracking needs no account. Choose the delivery country and postal code; add parcels afterwards via the integration options or the `paack.track_parcel` service.",
+        "data": {
+          "country": "Country",
+          "postal_code": "Postal code"
+        }
       }
     },
     "abort": {
@@ -100,6 +104,10 @@
         "postal_code": {
           "name": "Postal code",
           "description": "The postal code of the hub that should track the parcel. Only needed when several Paack hubs are set up."
+        },
+        "contents": {
+          "name": "Contents",
+          "description": "What is in the parcel, in your own words. Calling this again for a tracked parcel replaces it; an empty text clears it."
         }
       }
     },
@@ -110,6 +118,24 @@
         "tracking_code": {
           "name": "Tracking code",
           "description": "The Paack tracking code to stop tracking."
+        }
+      }
+    },
+    "update_contents": {
+      "name": "Update parcel contents",
+      "description": "Set what is in a parcel, in your own words, for a tracking code. An empty text clears it.",
+      "fields": {
+        "tracking_code": {
+          "name": "Tracking code",
+          "description": "The Paack tracking code."
+        },
+        "contents": {
+          "name": "Contents",
+          "description": "What is in the parcel, in your own words. An empty text clears it."
+        },
+        "config_entry_id": {
+          "name": "Account",
+          "description": "The account to store this for. Needed when no account lists the code yet."
         }
       }
     }
@@ -159,6 +185,11 @@
       "parcel": {
         "name": "Parcel {barcode}"
       }
+    }
+  },
+  "exceptions": {
+    "update_contents_entry_required": {
+      "message": "No account lists this code. Choose the account to store it for."
     }
   }
 }
