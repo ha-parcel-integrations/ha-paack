@@ -68,6 +68,8 @@ _STATUS_MAP: dict[str, ParcelStatus] = {
     "atPickupPoint": ParcelStatus.AT_PICKUP_POINT,
     "droppedInPudo": ParcelStatus.AT_PICKUP_POINT,
     "delivered": ParcelStatus.DELIVERED,
+    # Confirmed live: a home delivery left in the letterbox ends on this label.
+    "deliveredHousehold": ParcelStatus.DELIVERED,
     "collectedByCustomer": ParcelStatus.DELIVERED,
     "returnedToSender": ParcelStatus.RETURNING,
     "returnedToRetailer": ParcelStatus.RETURNING,

@@ -57,6 +57,7 @@ def test_tracking_url_keeps_the_code_as_issued_and_escapes_it():
         ("inDelivery", ParcelStatus.OUT_FOR_DELIVERY),
         ("droppedInPudo", ParcelStatus.AT_PICKUP_POINT),
         ("delivered", ParcelStatus.DELIVERED),
+        ("deliveredHousehold", ParcelStatus.DELIVERED),
         ("returnedToSender", ParcelStatus.RETURNING),
         ("logisticIssueOpen", ParcelStatus.PROBLEM),
     ],
@@ -288,6 +289,29 @@ def test_normalize_loader_delivery_window():
     parcel = normalize_parcel(raw)
     assert parcel["planned_from"] == "2026-04-17T07:00:00.000Z"
     assert parcel["planned_to"] == "2026-04-17T20:00:00.000Z"
+
+
+def test_normalize_loader_letterbox_delivery_is_delivered():
+    raw = {
+        "orderTrackData": {
+            "external_id": "SYNTHETIC123",
+            "expected_delivery_ts": {
+                "start": "2026-04-17T07:00:00.000Z",
+                "end": "2026-04-17T20:00:00.000Z",
+            },
+        },
+        "activeEvent": {
+            "label": "deliveredHousehold",
+            "timestamp": "2026-04-17T12:26:56.000Z",
+        },
+    }
+    parcel = normalize_parcel(raw)
+    assert parcel["status"] == ParcelStatus.DELIVERED
+    assert parcel["raw_status"] == "deliveredHousehold"
+    assert parcel["delivered"] is True
+    assert parcel["delivered_at"] == "2026-04-17T12:26:56.000Z"
+    assert parcel["planned_from"] is None
+    assert parcel["planned_to"] is None
 
 
 def test_normalize_stretches_point_estimate_to_the_end_of_the_day():
